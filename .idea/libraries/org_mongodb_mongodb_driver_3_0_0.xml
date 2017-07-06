@@ -5,6 +5,9 @@
       <root url="jar://$PROJECT_DIR$/lib/mongodb-driver-3.0.0.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/mongodb-driver-core-3.0.0.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/bson-3.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/mongodb-driver-3.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/mongodb-driver-core-3.0.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/bson-3.0.0.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

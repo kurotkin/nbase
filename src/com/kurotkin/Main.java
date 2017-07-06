@@ -1,45 +1,37 @@
 package com.kurotkin;
 
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
-import org.bson.Document;
-import org.sdecima.rssreader.RSSFeedReader;
-import org.sdecima.rssreader.RSSItem;
-import org.sdecima.rssreader.stores.ArrayListRSSFeedStore;
-
-import java.util.ArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 
 public class Main {
 
     public static void main(String[] args) {
-        ArrayListRSSFeedStore feedStore = new ArrayListRSSFeedStore();
 
-        RSSFeedReader.read("http://news.rambler.ru/rss/USA/", feedStore);
+        ScheduledExecutorService [] service = new ScheduledExecutorService[6];
 
-        ArrayList<RSSItem> list = feedStore.getList();
-
-        MongoClientURI connectionString = new MongoClientURI("mongodb://10.0.0.1:27017");
-        MongoClient mongoClient = new MongoClient(connectionString);
-        MongoDatabase database = mongoClient.getDatabase("news");
-        MongoCollection<Document> collection = database.getCollection("ru_rambler_news_USA");
-
-        int i = 0; // http://jsman.ru/mongo-book/Glava-1-Osnovy.html
-        for(RSSItem l : list) {
-            Document doc = new Document("guid", l.getGuid())
-                    .append("title", l.getTitle())
-                    .append("description", l.getDescription())
-                    .append("content", l.getContent())
-                    .append("pubDate", l.getPubDate());
-
-            collection.insertOne(doc);
-            i++;
+        for(int i = 0; i < service.length; i++) {
+            service[i] = Executors.newSingleThreadScheduledExecutor();
         }
-        System.out.println(i);
 
+        service[0].scheduleAtFixedRate(new Worker("https://news.rambler.ru/rss/head/",
+                "ru_rambler_news_head"), 0, 900, TimeUnit.SECONDS);
 
+        service[1].scheduleAtFixedRate(new Worker("https://news.rambler.ru/rss/world/",
+                "ru_rambler_news_world"), 100, 900, TimeUnit.SECONDS);
+
+        service[2].scheduleAtFixedRate(new Worker("https://news.rambler.ru/rss/politics/",
+                "ru_rambler_news_politics"), 200, 900, TimeUnit.SECONDS);
+
+        service[3].scheduleAtFixedRate(new Worker("https://news.rambler.ru/rss/business/",
+                "ru_rambler_news_business"), 300, 900, TimeUnit.SECONDS);
+
+        service[4].scheduleAtFixedRate(new Worker("https://news.rambler.ru/rss/incidents/",
+                "ru_rambler_news_incidents"), 400, 900, TimeUnit.SECONDS);
+
+        service[5].scheduleAtFixedRate(new Worker("http://news.rambler.ru/rss/USA/",
+                "ru_rambler_news_USA"), 500, 900, TimeUnit.SECONDS);
 
     }
 }
