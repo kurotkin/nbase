@@ -38,6 +38,7 @@ public class Worker implements Runnable {
         MongoCollection<Document> collection = database.getCollection(collectionName);
 
         List<Document> documents = new ArrayList<>();
+        int i = 0;
         for(RSSItem l : list) {
             Document doc = new Document("guid", l.getGuid())
                     .append("title", l.getTitle())
@@ -45,7 +46,9 @@ public class Worker implements Runnable {
                     .append("content", l.getContent())
                     .append("pubDate", l.getPubDate());
             documents.add(doc);
+            i++;
         }
+        System.out.println("get " + Integer.toString(i) + " from " + urlRSS);
         collection.insertMany(documents);
     }
 }
