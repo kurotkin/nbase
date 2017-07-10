@@ -1,6 +1,8 @@
 package com.kurotkin;
 
 import com.mongodb.MongoClient;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.UpdateOptions;
 import org.bson.Document;
 import org.sdecima.rssreader.RSSFeedReader;
 import org.sdecima.rssreader.RSSItem;
@@ -54,7 +56,12 @@ public class Worker implements Runnable {
         final CountDownLatch insertLatch = new CountDownLatch(1);
 
         MongoClient mongo = new MongoClient( "localhost" , 27017 );
-        mongo.getDatabase("news").getCollection(collectionName).insertMany(getRSS());
+        MongoCollection coll = mongo.getDatabase("news").getCollection(collectionName);
+        UpdateOptions options = new UpdateOptions();
+        options.upsert(true);
+        for (Document doc : getRSS()){
+            coll.updateOne(doc, new Document("$set", doc), options);
+        }
         mongo.close();
 
         boolean inserted = false;
