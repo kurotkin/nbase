@@ -11,7 +11,7 @@ import java.util.Date;
 public class Parser {
     public static void main(String[] args) {
         Mongo mongo = new Mongo("10.0.0.1", "news", "ru_tinkoff_invest_news");
-        for (int i = 98769; i < 1000000; i++) { //37804
+        for (int i = 106441; i < 1000000; i++) { //37804
             String url = "https://www.tinkoff.ru/invest/news/" + Integer.toString(i) +"/";
 
             org.bson.Document docOld = mongo.req("guid", url);
