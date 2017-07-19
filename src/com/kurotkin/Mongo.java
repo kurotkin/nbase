@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Sorts.descending;
 
 /**
  * Created by Vitaly on 14.07.17.
@@ -50,6 +51,14 @@ public class Mongo {
         MongoClient myMongo = new MongoClient( host , 27017 );
         MongoCollection coll = myMongo.getDatabase(db).getCollection(collection);
         Document doc = (Document) coll.find(eq(fuild, value)).first();
+        myMongo.close();
+        return doc;
+    }
+
+    public Document reqMax(String fuild) {
+        MongoClient myMongo = new MongoClient( host , 27017 );
+        MongoCollection coll = myMongo.getDatabase(db).getCollection(collection);
+        Document doc = (Document) coll.find().sort(descending(fuild)).first();
         myMongo.close();
         return doc;
     }

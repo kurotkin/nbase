@@ -3,17 +3,23 @@ package com.kurotkin;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+
+import static java.lang.System.exit;
 
 /**
  * Created by Vitaly Kurotkin on 12.07.2017.
  */
 public class Parser {
+    private static final DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
     public static void main(String[] args) {
-        int i = 109256;
-        if (args.equals(null))
-            i = Integer.parseInt(args[0]);
         Mongo mongo = new Mongo("10.0.0.1", "news", "ru_tinkoff_invest_news");
+        int i = mongo.reqMax("number").getInteger("number");
+        int j = 5;
+
         for (; i < 1000000; i++) { //37804
             String url = "https://www.tinkoff.ru/invest/news/" + Integer.toString(i) +"/";
 
@@ -26,10 +32,14 @@ public class Parser {
             if (doc == null) {
                 System.out.print(doc);
                 System.out.println(" " + i);
+                j--;
+                if (j < 0)
+                    exit(0);
                 continue;
             }
-
+            j = 5;
             doc.append("guid", url);
+            doc.append("number", i);
             System.out.println(i);
             mongo.update(doc);
         }
@@ -57,7 +67,6 @@ public class Parser {
                 .append("description", sd)
                 .append("content", s)
                 .append("creater", br);
-
         return docBson;
     }
 
@@ -65,38 +74,54 @@ public class Parser {
         Date d;
         String[] str = dat.split(" ");
         int year, month, date;
-        if (str[1].equals("сегодня")) {
+        if (str[1].toLowerCase().equals("сегодня")) {
             d = new Date();
+            String[] strTime = str[0].split(":");
+            d.setHours(Integer.parseInt(strTime[0]));
+            d.setMinutes(Integer.parseInt(strTime[1]));
+        } else if ((str[1].toLowerCase().equals("вчера"))) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(new Date());
+            cal.add(Calendar.DATE, -1);
+            d = cal.getTime();
+            String[] strTime = str[0].split(":");
+            d.setHours(Integer.parseInt(strTime[0]));
+            d.setMinutes(Integer.parseInt(strTime[1]));
         } else {
             date = Integer.parseInt(str[0]);
             year = Integer.parseInt(str[2]);
-            month = 0;
-            if (str[1].equals("январь"))
-                month = 1;
-            if (str[1].equals("февраль"))
-                month = 2;
-            if (str[1].equals("март"))
-                month = 3;
-            if (str[1].equals("апрель"))
-                month = 4;
-            if (str[1].equals("май"))
-                month = 5;
-            if (str[1].equals("июнь"))
-                month = 6;
-            if (str[1].equals("июль"))
-                month = 7;
-            if (str[1].equals("август"))
-                month = 8;
-            if (str[1].equals("сентябрь"))
-                month = 9;
-            if (str[1].equals("октябрь"))
-                month = 10;
-            if (str[1].equals("ноябрь"))
-                month = 11;
-            if (str[1].equals("декабрь"))
-                month = 12;
+            month = parsMonth(str[1]);
             d = new Date(year, month, date);
         }
         return d;
+    }
+
+    public static int parsMonth(String str) {
+        int month = 0;
+        if (str.equals("январь"))
+            month = 1;
+        if (str.equals("февраль"))
+            month = 2;
+        if (str.equals("март"))
+            month = 3;
+        if (str.equals("апрель"))
+            month = 4;
+        if (str.equals("май"))
+            month = 5;
+        if (str.equals("июнь"))
+            month = 6;
+        if (str.equals("июль"))
+            month = 7;
+        if (str.equals("август"))
+            month = 8;
+        if (str.equals("сентябрь"))
+            month = 9;
+        if (str.equals("октябрь"))
+            month = 10;
+        if (str.equals("ноябрь"))
+            month = 11;
+        if (str.equals("декабрь"))
+            month = 12;
+        return month;
     }
 }
