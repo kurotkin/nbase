@@ -8,5 +8,8 @@ package com.kurotkin;
  * db.getCollection('ru_tinkoff_invest_news').find({$text:{$search:"Роснефт"}}).limit(20)
  */
 public class Corrector {
-
+    public static void main(String[] args) {
+        Mongo mongo = new Mongo("10.0.0.1", "news", "ru_tinkoff_invest_news");
+        mongo.reAddedNumber();
+    }
 }

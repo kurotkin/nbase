@@ -2,8 +2,11 @@ package com.kurotkin;
 
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.UpdateOptions;
 import org.bson.Document;
+import org.bson.conversions.Bson;
+
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -61,5 +64,24 @@ public class Mongo {
         Document doc = (Document) coll.find().sort(descending(fuild)).first();
         myMongo.close();
         return doc;
+    }
+
+    public void reAddedNumber() {
+        MongoClient myMongo = new MongoClient( host , 27017 );
+        MongoCollection coll = myMongo.getDatabase(db).getCollection(collection);
+        MongoCursor<Document> cursor = coll.find().iterator();
+        try {
+            while (cursor.hasNext()) {
+                Document doc = cursor.next();
+                String[] str = doc.getString("guid").split("/");
+                int number = Integer.parseInt(str[5]);
+                System.out.println(number);
+                Bson newValue = new Document("number", number);
+                coll.updateOne(doc, new Document("$set", newValue), options);
+            }
+        } finally {
+            cursor.close();
+        }
+        myMongo.close();
     }
 }

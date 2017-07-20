@@ -3,8 +3,8 @@
     <output-path>$PROJECT_DIR$/out/artifacts/nbase_jar</output-path>
     <root id="archive" name="nbase.jar">
       <element id="module-output" name="nbase" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/lib/mongo-java-driver-3.0.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jsoup/jsoup/1.10.3/jsoup-1.10.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/mongo-java-driver-3.0.0.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>
