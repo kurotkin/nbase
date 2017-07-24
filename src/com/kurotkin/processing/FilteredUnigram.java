@@ -15,7 +15,7 @@ public class FilteredUnigram extends Unigram  {
 
         // remove endings of words
         for (int i = 0; i < words.length; i++) {
-            words[i] = PorterStemmer.doStem(words[i]);
+            words[i] = Porter.stem(words[i]);
         }
 
         Set<String> uniqueValues = new LinkedHashSet<>(Arrays.asList(words));
