@@ -9,7 +9,10 @@ import com.mongodb.client.model.UpdateOptions;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
@@ -29,6 +32,7 @@ public class Mongo {
     private String db;
     private String collection;
     private UpdateOptions options;
+    private static DateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy HH:mm:ss");
 
     public Mongo(String host, String db, String collection) {
         java.util.logging.Logger.getLogger("org.mongodb.driver").setLevel(Level.SEVERE);
@@ -108,6 +112,36 @@ public class Mongo {
         myMongo.close();
     }
 
+    public void correctYear() {
+        MongoClient myMongo = new MongoClient( host , 27017 );
+        MongoCollection coll = myMongo.getDatabase(db).getCollection(collection);
+        MongoCursor<Document> cursor = coll.find().iterator();
+        int i = 0;
+        try {
+            while (cursor.hasNext()) {
+                Document doc = cursor.next();
+                Date dateFromBase = doc.getDate("Date");
+                int year = dateFromBase.getYear();
+                System.out.print(i + " ");
+                i++;
+                System.out.println(year);
+                if (year == 117) {
+                    year = year + 1900;
+                    dateFromBase.setYear(year);
+                    System.out.println(dateFormat.format(dateFromBase));
+                    Bson newValue = new Document("Date", dateFromBase);
+                    coll.updateOne(doc, new Document("$set", newValue), options);
+                }
+
+            }
+        } finally {
+            cursor.close();
+        }
+
+        myMongo.close();
+    }
+
+
     public void create(String comp, String search) {
         MongoClient myMongo = new MongoClient(host , 27017 );
         MongoCollection coll = myMongo.getDatabase(db).getCollection(collection);
@@ -126,9 +160,11 @@ public class Mongo {
                     List<String> words = strs.stream().collect(Collectors.toList());
                     Document toNew = new Document(comp, comp)
                             .append("number", number)
-                            .append("date", doc.getDate("date"))
+                            .append("date", doc.getDate("Date"))
                             .append("words", words);
                     mongo.insert(toNew);
+                    System.out.print(dateFormat.format(doc.getDate("Date")));
+                    System.out.println(" " + number + " " + comp);
                 }
             }
         } finally {

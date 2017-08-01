@@ -10,6 +10,7 @@ package com.kurotkin;
 public class Corrector {
     public static void main(String[] args) {
         Mongo mongo = new Mongo("10.0.0.1", "news", "ru_tinkoff_invest_news");
-        mongo.reAddedNumber();
+        // mongo.reAddedNumber();
+        mongo.correctYear();
     }
 }
