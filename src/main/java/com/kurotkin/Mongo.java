@@ -126,7 +126,8 @@ public class Mongo {
                 i++;
                 System.out.println(year);
                 if (year == 117) {
-                    year = year + 1900;
+                    year = year + 1900
+                    ;
                     dateFromBase.setYear(year);
                     System.out.println(dateFormat.format(dateFromBase));
                     Bson newValue = new Document("Date", dateFromBase);

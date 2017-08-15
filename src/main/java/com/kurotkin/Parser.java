@@ -18,7 +18,7 @@ public class Parser {
     public static void main(String[] args) {
         Mongo mongo = new Mongo("10.0.0.1", "news", "ru_tinkoff_invest_news");
         int i = mongo.reqMax("number").getInteger("number");
-        int j = 5;
+        int j = 3000;
 
         for (; i < 1000000; i++) { //37804
             String url = "https://www.tinkoff.ru/invest/news/" + Integer.toString(i) +"/";
@@ -37,7 +37,7 @@ public class Parser {
                     exit(0);
                 continue;
             }
-            j = 5;
+            j = 3000;
             doc.append("guid", url);
             doc.append("number", i);
             System.out.println(i);
