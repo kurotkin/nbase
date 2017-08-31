@@ -17,20 +17,21 @@ public class GetNews {
         while (true){
             try {
                 int unser = get();
-                log.warning("Error! Guid is vary big!");
-                Thread.sleep(14400000);
+                log.info("Sleeping ...................");
+                Thread.sleep(999_998);
             } catch (InterruptedException e) {
                 log.warning(e.toString());
             }
         }
+
     }
 
     private static int get() throws InterruptedException {
-        log.info("Start program is started .... ");
+        log.info("Program is started .... ");
         Mongo mongo = new Mongo("10.0.0.1", "news", "ru_tinkoff_invest_news");
         int i = mongo.reqMax("number").getInteger("number");
         log.info("Start from " + i + " guid");
-        int j = 30;
+        int j = 20;
         for (; i < 1000000; i++) {
             String url = "https://www.tinkoff.ru/invest/news/" + Integer.toString(i) +"/";
             if (mongo.req("guid", url) != null) {
@@ -41,21 +42,23 @@ public class GetNews {
             if (doc == null) {
                 log.info("Number " + i + " NULL");
                 j--;
-                if (j < 0)
+                if (j < 0) {
                     return 0;
+                }
                 continue;
             }
-            j = 30;
+            j = 20;
             doc.append("guid", url);
             doc.append("number", i);
             log.info("Number " + i + " -------> load");
             mongo.update(doc);
-            Thread.sleep(2000);
+            Thread.sleep(600000);
         }
+        log.warning("Error! Guid is vary big!");
         return 1;
     }
 
-    public static void prepareLogging() {
+    private static void prepareLogging() {
         File loggingConfigurationFile = new File("logg.properties");
         if(!loggingConfigurationFile.exists()) {
             Writer output = null;
@@ -66,6 +69,7 @@ public class GetNews {
                 logConf.setProperty("java.util.logging.FileHandler.pattern", "log.log");
                 logConf.setProperty("java.util.logging.FileHandler.limit","50000");
                 logConf.setProperty("java.util.logging.FileHandler.count", "5");
+                logConf.setProperty("java.util.logging.FileHandler.append", "true");
                 logConf.setProperty("java.util.logging.FileHandler.formatter","java.util.logging.SimpleFormatter");
                 logConf.setProperty("java.util.logging.SimpleFormatter.format","%1$tY-%1$tm-%1$td %1$tH:%1$tM:%1$tS %4$s %2$s %5$s%6$s%n");
                 logConf.store(output, "Generated");
